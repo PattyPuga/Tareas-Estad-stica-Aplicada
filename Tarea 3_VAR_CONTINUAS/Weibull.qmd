@@ -1,0 +1,100 @@
+---
+title: "Distribucion Weibull"
+author: "Patricia Puga"
+format: html
+editor: visual
+---
+
+```{r}
+# -------------------------------
+# Distribución Weibull: ejemplo en R
+# -------------------------------
+
+# Cargar librerías necesarias
+library(ggplot2)
+
+# Parámetros de la distribución Weibull
+k <- 1.5       # parámetro de forma
+lambda <- 2    # parámetro de escala
+
+# Crear un rango de valores de x
+x <- seq(0, 6, length.out = 100)
+
+# Función de densidad (PDF)
+pdf <- dweibull(x, shape = k, scale = lambda)
+
+# Función de distribución acumulada (CDF)
+cdf <- pweibull(x, shape = k, scale = lambda)
+
+# -------------------------------
+# Gráfico de la función de densidad
+# -------------------------------
+ggplot(data = data.frame(x, pdf), aes(x = x, y = pdf)) +
+  geom_line(color = "blue", size = 1.2) +
+  ggtitle("Función de densidad Weibull") +
+  xlab("x") + ylab("f(x)") +
+  theme_minimal()
+
+# -------------------------------
+# Gráfico de la función de distribución acumulada
+# -------------------------------
+ggplot(data = data.frame(x, cdf), aes(x = x, y = cdf)) +
+  geom_line(color = "red", size = 1.2) +
+  ggtitle("Función de distribución acumulada Weibull") +
+  xlab("x") + ylab("F(x)") +
+  theme_minimal()
+
+# -------------------------------
+# Generar datos aleatorios Weibull
+# -------------------------------
+set.seed(123)  # reproducibilidad
+n <- 1000
+data_weibull <- rweibull(n, shape = k, scale = lambda)
+
+
+# -------------------------------
+# Resumen estadístico
+# -------------------------------
+summary(data_weibull)
+mean(data_weibull)
+var(data_weibull)
+
+# -------------------------------
+# Curiosidad: diferentes formas de la Weibull
+# -------------------------------
+k_values <- c(0.5, 1, 1.5, 3)
+lambda_val <- 2
+weibull_curves <- data.frame()
+
+for (k_val in k_values){
+  weibull_curves <- rbind(weibull_curves,
+                          data.frame(x = x, y = dweibull(x, shape = k_val, scale = lambda_val),
+                                     k = as.factor(k_val)))
+}
+
+ggplot(weibull_curves, aes(x = x, y = y, color = k)) +
+  geom_line(size = 1) +
+  ggtitle("Comparación de formas Weibull con diferentes k") +
+  xlab("x") + ylab("f(x)") +
+  theme_minimal() +
+  scale_color_discrete(name = "Parámetro k")
+
+```
+
+
+
+```{r}
+# Histograma de datos Weibull con PDF superpuesta
+ggplot() +
+  # Histograma
+  geom_histogram(aes(x = data_weibull, y = ..density..),
+                 bins = 30, fill = "skyblue", color = "black") +
+  # Curva de PDF
+  geom_line(data = data.frame(x = x, pdf = pdf),
+            aes(x = x, y = pdf), color = "darkblue", size = 1) +
+  ggtitle("Histograma de datos Weibull con PDF") +
+  xlab("x") + ylab("Densidad") +
+  theme_minimal()
+
+```
+
