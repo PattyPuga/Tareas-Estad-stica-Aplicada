@@ -1,0 +1,297 @@
+---
+title: "Proyecto Econometria"
+author: "Patricia Puga, Dario Ortiz"
+format: html
+editor: visual
+---
+
+# ^**INTRODUCCIÓN**.^
+
+*“Factores que determinan la probabilidad de ahorrar en México”*
+
+Una persona ahorra de forma activa cuando decide, reservar dinero para el futuro en algún instrumento financiero formal o informal. Esta práctica de ahorro es poco común entre la mayoría de los mexicanos y más si se trata de un ahorro formal. Sabemos y conocemos que mucha gente guarda su dinero en casa, debajo del colchón, a pesar del avance tecnológico que hemos vivido y de las muchas estrategias que permiten la inclusión financiera.
+
+Entonces el ahorro no debería ser una opción si no más un hábito, porque la salud financiera es más importante que preguntarte cada fin de mes si te va a alcanzar o si ya van a pagar, pero ¿Qué hace que una persona decida ahorrar?.
+
+En este análisis podremos identificar cuáles son las variables que influyen en la probabilidad de que un Mexicano ahorre. Para desarrollar este análisis en México, “el ahorro activo” se mide a través de la Encuesta Nacional de Inclusión Financiera (ENIF), misma que utilizaremos como base de información para estimar un modelo logit, que incluye las sigueintes variables : Ingreso, Educación, Género, Cuenta de Ahorro, Cuenta de Banco y Tipo de ingreso.
+
+Nuestra Hipótesis general es que las personas con mayor ingreso, educación y acceso al sistema financiero tienen más probabilidad de ahorrar.
+
+# ^**MARCO TEORICO**.^
+
+***Econometría.*** Es un subcampo de la estadística, la cual se enfoca de manera exclusiva al análisis de fenómenos económicos.
+
+***Datos de corte transversal.*** Es una muestra de datos tomados en un tiempo dado; estos datos pueden ser de individuos, hogares, países, entre otros. No se debe de pensar de manera rígida la idea de tomar datos en un tiempo dado; p. ej. pueden ser datos transversales las entrevistas realizadas a distintas familias en un país; es imposible entrevistar a todas en un solo día del año; a menos que tengas recursos infinitos para lograr el cometido.
+
+***Regresión Lineal.*** La regresión lineal es una técnica estadística ampliamente utilizada que permite modelar y analizar la relación entre una variable dependiente y una o más variables independientes. En su forma más simple, asume una relación lineal entre estas variables y busca encontrar la mejor línea recta que se ajuste a los datos observados.
+
+***Modelo Logit.*** En el modelo logit, la variable dependiente es una variable binaria o «dummy» que toma dos valores, generalmente representados como 0 y 1. Las variables independientes, también conocidas como variables predictoras, son aquellas que se utilizan para predecir la probabilidad del evento en cuestión. El modelo logit utiliza la función logística para modelar la relación entre las variables independientes y la probabilidad de que ocurra el evento binario. La función logit transforma las probabilidades lineales en un rango entre 0 y 1, asegurando que el resultado sea interpretable como una probabilidad.
+
+***Hipótesis Nula.*** La hipótesis nula es aquella hipótesis que se pretende rechazar. De modo que si el investigador consigue rechazar la hipótesis nula, significa que la hipótesis que quería demostrar en el estudio estadístico probablemente sea cierta. Por contra, si no se logra rechazar la hipótesis nula, quiere decir que lo más probable es que la suposición que pretendía probar sea falsa.
+
+***Hipótesis Alternativa***. La hipótesis alternativa es una suposición que tiene el investigador y para intentar probar que es cierta realizará un análisis estadístico. Así pues, al finalizar la prueba de hipótesis se aceptará o se rechazará la hipótesis alternativa en función de los resultados obtenidos.
+
+***Efectos Marginales***. Analizan el impacto de las variables explicativas sobre una variable de resultado. Dichos efectos proporcionan una medida precisa de como un pequeño cambio en una variable independiente influye en la variable dependiente.
+
+***Momio*** Es una operación estadistica la cual asocia 2 variables y mide el nivel de asociación entre ambas, es decir, que tanto se relacionan entre si. Que tanta probabilidad hay de que ocurra cierto evento y que tanta probabilidad hay de que no ocurra.
+
+***Curva ROC*** Una curva ROC es una representación gráfica del rendimiento de un modelo de clasificación binaria para todos los umbrales de clasificación. Y tambien mide la tasa de falsos positivos y verdaderos postivos, Una medida resumen común de la curva ROC es el área bajo la curva (AUC, Area Under the Curve), que cuantifica la capacidad del modelo para distinguir entre clases positivas y negativas: cuanto más cerca de 1, mejor la discriminación del modelo.
+
+# ^**METODOLOGÍA**^
+
+***Objetivo***: Identificar las variables que se relacionan con la probabilidad del ahorro en México 2024.
+
+La función teórica que explica el comportamiento del ahorro podría expresarse como:
+
+$P (Ahorra = 1) = f(Ingreso,Edad,Educación,Género,Cuenta Nómina, Tipo de Ingreso, Cuenta de Crédito)$
+
+Definición de Variables:
+
+-   $Y = Ahorro, Variable dependiente$
+
+Variables Independientes:
+
+-   $x_1: Sexo; 1 = Hombre, 0 = Mujer$
+
+-   $x_2: Edad, Años$
+
+-   $x_3: Educación, Nivel Educativo$
+
+-   $x_4: Ingreso$
+
+-   $x_5: Tipo de Ingreso: 1 = Fijo, 0 = Variable$
+
+-   $x_6: Cuenta de Nómina;  1 = Si,  0=No$
+
+-   $x_7: Cuentade Credito;  1 = Si,  0=No$
+
+-   $x_8: Uso del credito(Frecuencia);  1 = Si,  0=No$
+
+-   $x_9: Mentalida de Ahorro;  1 = Si,  0=No$
+
+Hipotesis Nula $H_0:B_i = 0$ Para cada una de nuestras variables, no existe relación estadisticamente significativa entre las variables X y la probabilidad de ahorrar.
+
+Hipotesis Alternativa $H_1; B_i=/ 0$ Si existira una relación estadisticamante significativa entre las variables X y la probabilidad de ahorar.
+
+***Modelo***
+
+Dado que la variable dependiente es binaria, se utiliza un modelo de elección discreta:
+
+-   Modelo Logit:
+
+***Infromación***
+
+Los datos provienen de la base Base_de_datos.csv con 1303 observaciones y las siguientes variables:
+
+-   sexo, edad, educación, ingresos, tipo_ingreso, cuenta_ahorro, tarjeta_de_credito, uso_credito, mentalidad.**\
+    \
+    **
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(pROC)      
+library(ggplot2)   
+library(dplyr)
+library(caret) 
+library(tidyverse)
+library(margins)
+library(car)
+```
+
+1.  *Cargamos nuestra base de datos*
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+Base_de_datos <- read_csv("Base de datos.csv")
+head(Base_de_datos)
+dim(Base_de_datos)
+
+```
+
+2.  *Limpieza de la base de datos y selección de variables*
+
+La base da datos fue creada apartir de la ENIF Encuesta Nacional de Inclusion Financiera, la cual contenia consigo 4 carpetas, de las cuales se fueron adjuntando las variables mas relevantes que incidian en si una persona ahorraba o no.
+
+```{r}
+colnames(Base_de_datos) <-c("observacion","sexo","edad","educacion","ingresos","cuenta_nomina", "tipo_ingreso", "tarjeta_de_credito", "uso_credito", "capacidad_pago","mentalidad", "ahorro" )
+
+
+# Variable dependiente: ahorro, 1 = Sí (ahorra), 2 = No (no ahorra)
+
+
+#Limpiamos nuestra base de datos por binario 1 y 0 en las variables donde habia 1 y 2
+
+# 1 = ahorra y 0 = no ahorra
+Base_de_datos$ahorro <- ifelse(Base_de_datos$ahorro == 1, 1, 0)
+
+# Sexo: 1 = Hombre, 2 = Mujer,  /  0 = Mujer, 1 = Hombre
+Base_de_datos$sexo <- ifelse(Base_de_datos$sexo == 1, 1, 0)
+
+# Tipo de ingreso: 1 = Fijo, 2 = Variable /  0 = Variable, 1 = Fijo
+Base_de_datos$tipo_ingreso <- ifelse(Base_de_datos$tipo_ingreso == 1, 1, 0)
+
+# Cuenta de Nomina: 1 = Si, 2 = No / 0 = No, 1 = Si
+Base_de_datos$cuenta_nomina <- ifelse(Base_de_datos$cuenta_nomina == 1, 1, 0)
+
+# Tarjeta de Credito: 1 = Si,  2 = No / 0 = No, 1 = Si
+Base_de_datos$tarjeta_de_credito <- ifelse(Base_de_datos$tarjeta_de_credito == 1, 1, 0)
+
+```
+
+```{r}
+head(Base_de_datos)
+colnames(Base_de_datos[2:11])
+
+```
+
+3.  Definimos nuestras variables
+
+```{r}
+
+y <- Base_de_datos$ahorro
+x <- Base_de_datos[ , colnames(Base_de_datos)[2:11]]
+x
+
+```
+
+4.  Estimamos nuestro modelo:
+
+```{r}
+# Hacer la Regresión  LOGIT con todas la variables
+model_1 <- glm(y ~.,   data = x, family = "binomial")
+summary(model_1)
+```
+
+~*Diagnostico\ de\ la\ primera\ regresión:*~
+
+Significancia individual (p-valores \< 0.05) Las variables Sexo, educación, ingresos, y actitud de ahorro presentan signos positivos, pero bajo nivel de significación pues su p_valor es \> 0.05
+
+Mientras que las variables Edad, cuenta de nomina, tipo de ingreso, tarjeta de credito y frecuencia de uso en el credito presentaron signos negativos, esto nos indica que no existe una diferencia estasdistica que resulte relevante.
+
+Este modelo en general nos dice que las varaibles selecionadas no logran explicar la probabilidad del ahorro.
+
+En esta primera parte del modelo con todas las variables no logramos rechazar nuestra hipotesis nula, es decir que no exixiste evidencia que las variables influyen en la probabilidad de ahorro.
+
+```{r}
+exp(coef(model_1))
+```
+
+Los coeficientes nos dicenque si son \< 1 disminyen la probabilidad de ahorro, lo que significa un efecto negativo, pero si son \> 1 aumentan estas probabilidad y el efecto es positivo.
+
+La mayoria de nuestras variables se encuentra poco arriba de ser \> 1, como la educación, capacidad de pago, sexo, mentalidad de ahorro.
+
+Podemos observar tambien que el ingreso esta cerca de ser = 1, que significa que no tiene efecto en la probabilidad que el evento ocurra o no.
+
+^*Para\ evaluar\ si\ nuestro\ modelo\ tiene\ multicolnaiedad\ ocuparemos\ el\ VIF*^
+
+```{r}
+vif(model_1)
+```
+
+los resultados los podemos interpretar como \< 5 no existe multicolaniedad, en este sentido no hay variables que esten encimadas.
+
+**Efectos Marginales**
+
+Calcularemos tambies los efectos marginales de las variables sobre la probabilidad de exito del primer modelo, nos permitira observar como o cuanto cambia la probabilidad de ahorrar cuando una variable aumenta en una unidad mientras que las demas se mantienen constantes:
+
+```{r}
+margins(model_1)
+```
+
+Entonces usaremos un metodo de transfromación en la variable de los ingresos, para evitar los sesgos y mejorar el modelo.
+
+**Creación de variable logaritmica**
+
+```{r}
+# Crear variable logarítmica del ingreso
+Base_de_datos <- Base_de_datos %>%
+  mutate(log_ingresos = log(ingresos + 1))
+
+```
+
+1.  Volvemos a estimar el modelo con este ajuste
+
+```{r}
+#  Hacer la Regresión Lineal con el ajuste en el ingreso 
+model_2 <- glm(ahorro ~ sexo + edad + educacion + log_ingresos + tipo_ingreso + cuenta_nomina + tarjeta_de_credito + uso_credito + capacidad_pago  + mentalidad,   data = Base_de_datos, family = binomial)
+
+summary(model_2)
+```
+
+El siguente codigo nos mostrara el cambio porcentual en la probabilidad del ahorro con algun cambio en cada variable
+
+```{r}
+exp(coef(model_2))
+```
+
+Se interpreta de la siguente manera; 1. Para la Educación = 1.066, siginifa que por cada unidad adicional de educación la probabilidad del ahorro aumenta en .066%. 2. Para la varaible de sexo = 1.17, por cada unidad adicional la probabilidad de ahorrar aumenta en .17%
+
+**Efectos marginales**
+
+```{r}
+margins(model_2)
+```
+
+Los efectos de las variables, sexo, educación, ingreso(log), la capacidad de pago y la mentalidad tienen efecto positivo de modo que pueden ser inflyentes en el aumento sobre la pribabilidad del ahorro.
+
+Mientras que las variables, edad, tipo de ingreso, tener cuenta de nomina, ademas del tener credito y usarlo con frecuencia afectan negativamente a esta probabilidad de ahorro, pues estraian reduciendo ese porcentaje.
+
+```{r}
+momio <- exp(coefficients(model_2))   #exp es para obtener los momios
+momio
+
+```
+
+```{r}
+# Regresión con las variables  cerca de ser significativas
+model_3 <- glm(ahorro ~ sexo + tipo_ingreso + cuenta_nomina, data = Base_de_datos, family = binomial)
+
+summary(model_3)
+
+```
+
+La variable "sexo", influye en la probabilidad de ahorro, lo que significa que de manera positiva tiene relacion directa con lo que se intenta predecir, que es la probabilidad de que una persona ahorre.
+
+Para calcular la probabilidad predicha de ahorrar utilizamos el sigueinte codigo:
+
+```{r}
+# Probabilidad estimada de ahorrar
+Base_de_datos$prob_ahorro <- predict(model_3, type = "response")
+head(Base_de_datos[, c("prob_ahorro", "ahorro")])
+
+```
+
+El modelo logra capturar tendencias generales en el ahorro, mediante las variables que se muestran al momento del caclulo de la probabilidad de que una persona ahorre.
+
+**Curva ROC**
+
+```{r}
+# Curva ROC y AUC
+roc_curve <- roc(Base_de_datos$ahorro, Base_de_datos$prob_ahorro)
+plot(roc_curve, main = "Curva ROC - Modelo Logit de Ahorro")
+auc(roc_curve)
+```
+
+Tanto la curva ROC como el AUC Area Bajo la Curva nos indican que el modelo tiene un poder de predicción bajo, el cual esta ligeramiente por encima del azar , esto nos indica la poca probabilidad entre los que ahorran y quienes no.
+
+# ^CONCLUSIÓN^
+
+En este proyecto aplicado con un modelo logit pudimos observar que no siempre son efectivas las variables seleccionadas para predecir si una persona ahorra, dado que identificamos que variables de tipo socieconomico nos son tan fuertes para tener significacia en la probabilidad.
+
+Sin emabargo las variables como el tipo de ingreso (fijo o variables) y el tener una cuenta de nomina resultaron ser las mas acercadas a tener efecto en esta probabilidad.
+
+Por otro lado, variables como la edad, el sexo, el nivel educativo y el tipo de ingreso no resultaron estadísticamente significativas en la muestra analizada. Esto no implica que carezcan de importancia teórica, sino que su efecto no fue visible.
+
+En general este modelo nos permitio jugar con las variables e intentar que tres modelos nos arrojaran datos diferentes, sin embargo nuestro resultado no fue el esperado, rechanzado de esta manera en cada modelo la hipotesis alternativa, dejando asi como conclusión que;Para cada una de nuestras variables, no existe relación estadisticamente significativa en la probabilidad de ahorrar.
+
+# ^REFERENCIAS^
+
+Damodar Gujarati y Dawn Porter. “Econometría (5ta. edición ed.)”. En: México DF: Mc Graw Hill (2010).<https://studylib.net/doc/26265992/econometria-gujarati.pdf-5%C2%BA-edici%C3%B3n---espa%C3%B1ol>
+
+Universidad, De los Andes (2022) . Colombia <https://programas.uniandes.edu.co/blog/regresion-lineal>
+
+Economía HD. (2023, agosto 3). Modelo Logit. Wordpress.<https://economiahdcom.wordpress.com/2023/08/03/modelo-logit/>
+
+Gisbert Juárez, M. (s. f.). Diferencia entre la hipótesis nula y la hipótesis alternativa. Probabilidad y Estadística. <https://www.probabilidadyestadistica.net/hipotesis-nula-y-alternativa/>
+
+Nguyen, M. (2025, noviembre 2). Guía sobre análisis de datos. Google Drive. <https://share.google/QQoCuxZ8VAvZTsgIy>
+
+Lifeder. (15 de diciembre de 2022). Razón de momios. Recuperado de: <https://www.lifeder.com/razon-de-momios/>
